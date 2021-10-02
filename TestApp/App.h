@@ -29,6 +29,8 @@
 #include <dwrite.h>
 #include <wincodec.h>
 
+#include "TextEditing/TextLine.h"
+
 template<class Interface>
 inline void
 SafeRelease(
@@ -79,6 +81,7 @@ private:
 	// Rendering
 	HRESULT on_render();
 	void clear_window(const D2D1::ColorF &color);
+	void draw_textline();
 	void request_redraw();
 
 	D2D1_SIZE_F WindowSize() const;
@@ -96,4 +99,6 @@ private:
 	IDWriteTextFormat			*m_pTextFormat;
 	ID2D1SolidColorBrush		*m_pSolidBrush;
 	ID2D1StrokeStyle			*m_pStrokeStyle;
+
+	ted::TextLine				m_textline;
 };

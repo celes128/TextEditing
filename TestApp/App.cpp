@@ -7,6 +7,7 @@
 
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dwrite.lib")
+#pragma comment(lib, "TextEditing.lib")
 
 static std::wstring str_to_wstr(const std::string &str)
 {
@@ -299,6 +300,7 @@ HRESULT App::on_render()
 
 		clear_window(ColorFrom3i(0, 20, 80));
 
+		draw_textline();
 
 		hr = m_pRenderTarget->EndDraw();
 		if (hr == D2DERR_RECREATE_TARGET)
@@ -314,6 +316,63 @@ HRESULT App::on_render()
 void App::clear_window(const D2D1::ColorF &color)
 {
 	m_pRenderTarget->Clear(color);
+}
+
+void App::draw_textline()
+{
+	// Save the brush color to restore it before the return
+	const auto prevColor = m_pSolidBrush->GetColor();
+
+	const auto winSize = WindowSize();
+	D2D1_RECT_F rect{
+		0.f,
+		0.f,
+		winSize.width,
+		winSize.height
+	};
+
+	// Command line text
+	const auto wstrText = str_to_wstr(m_textline.String().c_str());
+	const auto len = wstrText.length();
+	m_pSolidBrush->SetColor(ColorFrom3i(255, 255, 255));
+
+	IDWriteTextLayout *pTextLayout = nullptr;
+	auto hr = m_pDWriteFactory->CreateTextLayout(
+		wstrText.c_str(),
+		len,
+		m_pTextFormat,
+		rect.right - rect.left,
+		rect.bottom - rect.top,
+		&pTextLayout
+	);
+	m_pRenderTarget->DrawTextLayout({ rect.left, rect.top }, pTextLayout, m_pSolidBrush);
+
+	// Draw the caret
+	DWRITE_HIT_TEST_METRICS hitTestMetrics;
+	float caretX, caretY;
+	bool isTrailingHit = false; // Use the leading character edge for simplicity here.
+
+	// Map text position index to caret coordinate and hit-test rectangle.
+	pTextLayout->HitTestTextPosition(
+		m_textline.Caret(),
+		isTrailingHit,
+		OUT &caretX,
+		OUT &caretY,
+		OUT &hitTestMetrics
+	);
+
+	// Respect user settings.
+	DWORD caretWidth = 1;
+	SystemParametersInfo(SPI_GETCARETWIDTH, 0, OUT &caretWidth, 0);
+
+	// Draw a thin rectangle.
+	D2D1_RECT_F caretRect = {
+		rect.left + caretX - caretWidth / 2u,
+		rect.top + hitTestMetrics.top,
+		rect.left + caretX + (caretWidth - caretWidth / 2u),
+		rect.top + hitTestMetrics.top + hitTestMetrics.height
+	};
+	m_pRenderTarget->FillRectangle(&caretRect, m_pSolidBrush);
 }
 
 //
@@ -337,18 +396,70 @@ void App::OnResize(UINT width, UINT height)
 
 void App::on_wm_char(WPARAM wParam)
 {
-	/*auto changed = m_cmdLine.HandleChar(static_cast<int>(wParam));
+	bool changed = true;
+
+	switch (wParam) {
+	case 0x08:// Process a backspace.
+		changed = m_textline.CDeleteLeftChar();
+		break;
+
+	case 0x0A:// Process a linefeed.
+		break;
+
+	case 0x1B:// Process an escape. 
+		break;
+
+	case 0x09:// Process a tab. 
+		break;
+
+	case 0x0D:// Process a carriage return.
+		changed = m_textline.Clear();
+		break;
+
+	default:// Filter only displayable ASCII characters
+		if (32 <= wParam && wParam < 128) {
+			changed = m_textline.InsertChar(wParam);
+		}
+		else changed = false;
+		break;
+	}
+	
 	if (changed) {
 		request_redraw();
-	}*/
+	}
 }
 
 void App::on_wm_keydown(WPARAM wParam)
 {
-	/*auto changed = m_cmdLine.HandleKeyDown(wParam);
+	bool changed = false;
+
+	switch (wParam) {
+	case VK_LEFT:
+		changed = m_textline.CMoveBackward();
+		break;
+
+	case VK_RIGHT:
+		changed = m_textline.CMoveForward();
+		break;
+
+	case VK_HOME:
+		changed = m_textline.CMoveToLineBegin();
+		break;
+
+	case VK_END:
+		changed = m_textline.CMoveToLineEnd();
+		break;
+
+	case 'X': case 'x':
+		if ((GetAsyncKeyState(VK_CONTROL) & 1)) {
+			changed = m_textline.Clear();
+		}
+		break;
+	}
+
 	if (changed) {
 		request_redraw();
-	}*/
+	}
 }
 
 void App::request_redraw()
