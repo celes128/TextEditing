@@ -168,6 +168,7 @@ namespace Tests {
 			//      0
 			line = "";
 
+			moved = line.CMoveToNextWordBegin();
 			Assert::IsFalse(moved, L"4a");
 			Assert::IsTrue(line.Caret() == 0, L"4b");
 
@@ -175,6 +176,7 @@ namespace Tests {
 			//      01
 			line = " ";
 
+			moved = line.CMoveToNextWordBegin();
 			Assert::IsFalse(moved, L"5a");
 			Assert::IsTrue(line.Caret() == 1, L"5b");
 		}
