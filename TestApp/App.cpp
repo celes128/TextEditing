@@ -46,7 +46,7 @@ int WINAPI WinMain(
 }
 
 
-const float App::kFontSize = 24.f;
+const float App::kFontSize = 28.f;
 
 //
 // Initialize members.
@@ -335,7 +335,7 @@ void App::draw_textline()
 	// Command line text
 	const auto wstrText = str_to_wstr(m_textline.String().c_str());
 	const auto len = wstrText.length();
-	m_pSolidBrush->SetColor(ColorFrom3i(255, 255, 255));
+	m_pSolidBrush->SetColor(ColorFrom3i(230, 230, 230));
 
 	IDWriteTextLayout *pTextLayout = nullptr;
 	auto hr = m_pDWriteFactory->CreateTextLayout(
@@ -374,6 +374,8 @@ void App::draw_textline()
 		rect.top + hitTestMetrics.top + hitTestMetrics.height
 	};
 	m_pRenderTarget->FillRectangle(&caretRect, m_pSolidBrush);
+
+	m_pSolidBrush->SetColor(prevColor);
 }
 
 //

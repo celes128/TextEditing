@@ -134,10 +134,10 @@ namespace Tests {
 			Assert::IsTrue(line.Caret() == 0, L"3b");
 		}
 
-		TEST_METHOD(CaretMoveToNextWordBegin)
+		TEST_METHOD(CMoveToNextWordBegin)
 		{
 			// ----------------------------------------
-			//                01234567
+			//                    01234567
 			ted::TextLine	line("ab cd e");
 			bool			moved;
 
@@ -153,6 +153,12 @@ namespace Tests {
 			moved = line.CMoveToNextWordBegin();
 			Assert::IsFalse(moved, L"2a");
 			Assert::IsTrue(line.Caret() == 6, L"2b");
+
+			line.CMoveToLineBegin();
+			line.CMoveForward(2);
+			moved = line.CMoveToNextWordBegin();
+			Assert::IsTrue(moved, L"3a");
+			Assert::IsTrue(line.Caret() == 3, L"3b");
 
 			// ----------------------------------------
 			//      012345678
@@ -179,6 +185,33 @@ namespace Tests {
 			moved = line.CMoveToNextWordBegin();
 			Assert::IsFalse(moved, L"5a");
 			Assert::IsTrue(line.Caret() == 1, L"5b");
+		}
+
+		TEST_METHOD(CInsideWord)
+		{
+			// ----------------------------------------
+			//                    01234567
+			ted::TextLine	line("ab cd e");
+
+			Assert::IsFalse(line.CInsideWord(), L"0a");
+
+			line.CMoveBackward();
+			Assert::IsFalse(line.CInsideWord(), L"0b");
+
+			line.CMoveBackward(2);
+			Assert::IsTrue(line.CInsideWord(), L"0c");
+
+			// ----------------------------------------
+			line = "a";
+
+			Assert::IsFalse(line.CInsideWord(), L"1a");
+			line.CMoveBackward();
+			Assert::IsFalse(line.CInsideWord(), L"1b");
+
+			// ----------------------------------------
+			line = "";
+
+			Assert::IsFalse(line.CInsideWord(), L"2a");
 		}
 	};
 }

@@ -34,6 +34,7 @@ namespace ted {
 		bool CAtLineEnd() const { return m_caret == Length(); }
 		bool CAtWordBegin() const;
 		bool CAtWordEnd() const;
+		bool CInsideWord() const;
 
 		bool CMoveForward(size_t n = 1);
 		bool CMoveBackward(size_t n = 1);

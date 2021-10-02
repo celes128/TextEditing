@@ -31,6 +31,12 @@ namespace ted {
 		return std::isspace(m_text[m_caret]) && !std::isspace(m_text[m_caret - 1]);
 	}
 
+	bool TextLine::CInsideWord() const
+	{
+		if (CAtLineEnd() || Length() <= 1) return false;
+		return !std::isspace(m_text[m_caret - 1]) && !std::isspace(m_text[m_caret]);
+	}
+
 	bool TextLine::CMoveForward(size_t n)
 	{
 		const auto prev = m_caret;
@@ -136,7 +142,7 @@ namespace ted {
 		// Save current position to check if we moved
 		const auto prev = m_caret;
 		// Make i point to a space character
-		size_t i;
+		size_t i = m_caret;
 		if (CAtLineEnd()) {
 			if (!std::isspace(m_text[m_caret - 1])) {
 				m_caret = word_begin(m_text, m_caret - 1);
@@ -150,7 +156,6 @@ namespace ted {
 				if (0 == j) return false;
 				else i = j - 1;
 			}
-			else i = m_caret;
 		}
 
 		// Here i points to space character
@@ -182,7 +187,7 @@ namespace ted {
 		// Save current position to check if we moved
 		const auto prev = m_caret;
 		// Make i point to a space character
-		size_t i;
+		size_t i = m_caret;
 		if (!std::isspace(m_text[m_caret])) {
 			i = word_end(m_text, m_caret);
 			if (i == len) return false;// the line ends by this word
