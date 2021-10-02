@@ -33,7 +33,7 @@ namespace ted {
 
 	bool TextLine::CInsideWord() const
 	{
-		if (CAtLineEnd() || Length() <= 1) return false;
+		if (CAtLineBegin() || CAtLineEnd() || Length() <= 1) return false;
 		return !std::isspace(m_text[m_caret - 1]) && !std::isspace(m_text[m_caret]);
 	}
 
@@ -132,6 +132,15 @@ namespace ted {
 		for (; i < len && !std::isspace(s[i]); ++i)
 			;
 		return i;
+	}
+
+	bool TextLine::CMoveToWordBegin()
+	{
+		if (CInsideWord() || CAtWordEnd()) {
+			m_caret = word_begin(m_text, m_caret);
+			return true;
+		}
+		else return false;
 	}
 
 	bool TextLine::CMoveToPrevWordBegin()

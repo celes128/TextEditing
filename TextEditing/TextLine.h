@@ -42,6 +42,9 @@ namespace ted {
 		bool CMoveToLineBegin();
 		bool CMoveToLineEnd();
 
+		// Does nothing if !CInsideWord() && !CAtWordEnd()
+		bool CMoveToWordBegin();
+
 		bool CMoveToPrevWordBegin();
 		bool CMoveToNextWordBegin();
 

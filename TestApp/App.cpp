@@ -444,9 +444,14 @@ void App::on_wm_keydown(WPARAM wParam)
 	switch (wParam) {
 	case VK_LEFT:
 		if (is_key_down(VK_CONTROL)) {
-			changed = m_textline.CMoveToPrevWordBegin();
-			if (!changed) {
-				changed = m_textline.CMoveToLineBegin();
+			if (m_textline.CInsideWord()) {
+				changed = m_textline.CMoveToWordBegin();
+			}
+			else {
+				changed = m_textline.CMoveToPrevWordBegin();
+				if (!changed) {
+					changed = m_textline.CMoveToLineBegin();
+				}
 			}
 		}
 		else {
