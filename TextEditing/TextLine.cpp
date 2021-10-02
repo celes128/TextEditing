@@ -150,6 +150,7 @@ namespace ted {
 				if (0 == j) return false;
 				else i = j - 1;
 			}
+			else i = m_caret;
 		}
 
 		// Here i points to space character

@@ -59,6 +59,7 @@ App::App()
 	, m_pTextFormat(NULL)
 	, m_pSolidBrush(NULL)
 	, m_pStrokeStyle(NULL)
+	, m_textline("Enter some text; press Enter to clear")
 {
 }
 
@@ -429,17 +430,38 @@ void App::on_wm_char(WPARAM wParam)
 	}
 }
 
+static bool is_key_down(WPARAM wParam)
+{
+	return GetAsyncKeyState(wParam) & 0x8000;
+}
+
 void App::on_wm_keydown(WPARAM wParam)
 {
 	bool changed = false;
 
 	switch (wParam) {
 	case VK_LEFT:
-		changed = m_textline.CMoveBackward();
+		if (is_key_down(VK_CONTROL)) {
+			changed = m_textline.CMoveToPrevWordBegin();
+			if (!changed) {
+				changed = m_textline.CMoveToLineBegin();
+			}
+		}
+		else {
+			changed = m_textline.CMoveBackward();
+		}
 		break;
 
 	case VK_RIGHT:
-		changed = m_textline.CMoveForward();
+		if (is_key_down(VK_CONTROL)) {
+			changed = m_textline.CMoveToNextWordBegin();
+			if (!changed) {
+				changed = m_textline.CMoveToLineEnd();
+			}
+		}
+		else {
+			changed = m_textline.CMoveForward();
+		}
 		break;
 
 	case VK_HOME:
