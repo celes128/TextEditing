@@ -13,6 +13,12 @@ namespace ted {
 		auto Length() const { return m_text.length(); }
 		auto Caret() const { return m_caret; }
 
+		const char& operator[](size_t i) const
+		{
+			assert(i < Length());
+			return m_text[i];
+		}
+
 		// DeleteCharLeft deletes the character on the left of the caret, if there is one.
 		// Returns true iff a character was delete.
 		bool CDeleteLeftChar();

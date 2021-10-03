@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CmdDeleteChar.h" />
     <ClInclude Include="CmdInsertChar.h" />
     <ClInclude Include="CommandHistory.h" />
     <ClInclude Include="framework.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="TextLine.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CmdDeleteChar.cpp" />
     <ClCompile Include="CmdInsertChar.cpp" />
     <ClCompile Include="CommandHistory.cpp" />
     <ClCompile Include="FSOStack.cpp" />

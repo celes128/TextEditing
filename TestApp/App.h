@@ -30,6 +30,7 @@
 #include <wincodec.h>
 
 #include "TextEditing/TextLine.h"
+#include "TextEditing/CommandHistory.h"
 
 template<class Interface>
 inline void
@@ -44,15 +45,6 @@ SafeRelease(
 		(*ppInterfaceToRelease) = NULL;
 	}
 }
-
-//#ifndef Assert
-//#if defined( DEBUG ) || defined( _DEBUG )
-//#define Assert(b) if (!(b)) {OutputDebugStringA("Assert: " #b "\n");}
-//#else
-//#define Assert(b)
-//#endif //DEBUG || _DEBUG
-//#endif
-
 
 #ifndef HINST_THISCOMPONENT
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
@@ -76,7 +68,7 @@ private:
 	// Windows message handling
 	void on_wm_char(WPARAM wParam);
 	void on_wm_keydown(WPARAM wParam);
-	void OnResize(UINT width, UINT height);
+	void on_resize(UINT width, UINT height);
 
 	// Rendering
 	HRESULT on_render();
@@ -100,5 +92,6 @@ private:
 	ID2D1SolidColorBrush		*m_pSolidBrush;
 	ID2D1StrokeStyle			*m_pStrokeStyle;
 
+	ted::CommandHistory<64>		m_cmdHist;
 	ted::TextLine				m_textline;
 };

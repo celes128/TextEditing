@@ -17,6 +17,11 @@ namespace ted {
 			clear_stack(m_undoneCmds);
 		}
 
+		void Clear()
+		{
+			this->~CommandHistory();
+		}
+
 		void Execute(ICommand *cmd)
 		{
 			cmd->Execute();

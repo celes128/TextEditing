@@ -5,6 +5,9 @@
 #include <codecvt>
 #include <locale>
 
+#include "TextEditing/CmdInsertChar.h"
+#include "TextEditing/CmdDeleteChar.h"
+
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dwrite.lib")
 #pragma comment(lib, "TextEditing.lib")
@@ -384,7 +387,7 @@ void App::draw_textline()
 //  If the application receives a WM_SIZE message, this method
 //  resizes the render target appropriately.
 //
-void App::OnResize(UINT width, UINT height)
+void App::on_resize(UINT width, UINT height)
 {
 	if (m_pRenderTarget)
 	{
@@ -405,7 +408,12 @@ void App::on_wm_char(WPARAM wParam)
 
 	switch (wParam) {
 	case 0x08:// Process a backspace.
-		changed = m_textline.CDeleteLeftChar();
+
+		// Delete the character on the left of the caret, if it exists.
+		if (m_textline.Caret() > 0) {
+			m_cmdHist.Execute(new ted::CmdDeleteChar(m_textline.Caret() - 1, m_textline));
+			changed = true;
+		}
 		break;
 
 	case 0x0A:// Process a linefeed.
@@ -419,11 +427,13 @@ void App::on_wm_char(WPARAM wParam)
 
 	case 0x0D:// Process a carriage return.
 		changed = m_textline.Clear();
+		m_cmdHist.Clear();
 		break;
 
 	default:// Filter only displayable ASCII characters
 		if (32 <= wParam && wParam < 128) {
-			changed = m_textline.InsertAtCaret(wParam);
+			m_cmdHist.Execute(new ted::CmdInsertChar(wParam, m_textline.Caret(), m_textline));
+			changed = true;
 		}
 		else changed = false;
 		break;
@@ -482,11 +492,24 @@ void App::on_wm_keydown(WPARAM wParam)
 		break;
 
 	case 'X': case 'x':
-		if ((GetAsyncKeyState(VK_CONTROL) & 1)) {
+		if (is_key_down(VK_CONTROL)) {
 			changed = m_textline.Clear();
 		}
 		break;
-	}
+
+	case 'Z': case 'z': {
+		if (is_key_down(VK_CONTROL)) {
+			changed = m_cmdHist.Undo();
+		}
+	}break;
+
+	case 'Y': case 'y': {
+		if (is_key_down(VK_CONTROL)) {
+			changed = m_cmdHist.Redo();
+		}
+	}break;
+
+	}// END switch( (wParam)
 
 	if (changed) {
 		request_redraw();
@@ -547,7 +570,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 			{
 				UINT width = LOWORD(lParam);
 				UINT height = HIWORD(lParam);
-				pApp->OnResize(width, height);
+				pApp->on_resize(width, height);
 			}
 			wasHandled = true;
 			result = 0;

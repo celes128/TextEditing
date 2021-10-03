@@ -57,7 +57,8 @@ namespace ted {
 		void Pop()
 		{
 			if (!Empty()) {
-				decrement(m_top);
+				if (Size() > 1) decrement(m_top);
+				
 				--m_size;
 			}
 		}
