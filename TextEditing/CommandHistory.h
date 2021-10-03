@@ -8,6 +8,8 @@ namespace ted {
 	template <size_t CAPACITY>
 	class CommandHistory {
 	public:
+		using CommandStack = FSOStack<ICommand *, CAPACITY>;
+		
 		CommandHistory()
 		{}
 
@@ -33,14 +35,9 @@ namespace ted {
 		//	* true iff a command was undone.
 		bool Undo()
 		{
-			if (!m_doneCmds.Empty()) {
-				auto *cmd = m_doneCmds.Top();
-				m_doneCmds.Pop();
-
+			auto *cmd = transfer_one(m_doneCmds, m_undoneCmds);
+			if (cmd) {
 				cmd->Undo();
-
-				m_undoneCmds.Push(cmd);
-
 				return true;
 			}
 			else return false;
@@ -50,21 +47,16 @@ namespace ted {
 		//	* true iff a command was redone.
 		bool Redo()
 		{
-			if (!m_undoneCmds.Empty()) {
-				auto *cmd = m_undoneCmds.Top();
-				m_undoneCmds.Pop();
-
+			auto *cmd = transfer_one(m_undoneCmds, m_doneCmds);
+			if (cmd) {
 				cmd->Execute();
-
-				m_doneCmds.Push(cmd);
-
 				return true;
 			}
 			else return false;
 		}
 
 	private:
-		void clear_stack(FSOStack<ICommand *, CAPACITY> &s)
+		void clear_stack(CommandStack &s)
 		{
 			while (!s.Empty()) {
 				auto *cmd = s.Top();
@@ -74,10 +66,29 @@ namespace ted {
 			}
 		}
 
+		// transfer_one pops a command from the source stack and
+		// pushes it onto the destination stack.
+		// Does nothing if the source stack is empty.
+		//
+		// RETURN VALUE
+		//	* a pointer to the transfered command if there is one else nullptr.
+		ICommand *transfer_one(CommandStack &src, CommandStack &dest)
+		{
+			if (!src.Empty()) {
+				auto *cmd = src.Top();
+				src.Pop();
+
+				dest.Push(cmd);
+
+				return cmd;
+			}
+			else return nullptr;
+		}
+
 	private:
-		FSOStack<ICommand *, CAPACITY> m_doneCmds;
+		CommandStack m_doneCmds;
 		
-		FSOStack<ICommand *, CAPACITY> m_undoneCmds;
+		CommandStack m_undoneCmds;
 		// I could use an std::stack for this one.
 	};
 }
