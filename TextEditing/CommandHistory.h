@@ -35,24 +35,14 @@ namespace ted {
 		//	* true iff a command was undone.
 		bool Undo()
 		{
-			auto *cmd = transfer_one(m_doneCmds, m_undoneCmds);
-			if (cmd) {
-				cmd->Undo();
-				return true;
-			}
-			else return false;
+			return transfer_one(m_doneCmds, m_undoneCmds, Action::Undo);
 		}
 
 		// RETURN VALUE
 		//	* true iff a command was redone.
 		bool Redo()
 		{
-			auto *cmd = transfer_one(m_undoneCmds, m_doneCmds);
-			if (cmd) {
-				cmd->Execute();
-				return true;
-			}
-			else return false;
+			return transfer_one(m_undoneCmds, m_doneCmds, Action::Execute);
 		}
 
 	private:
@@ -66,17 +56,24 @@ namespace ted {
 			}
 		}
 
-		// transfer_one pops a command from the source stack and
-		// pushes it onto the destination stack.
-		// Does nothing if the source stack is empty.
+		enum class Action { Execute, Undo };
+
+		// transfer_one...
+		//	... pops a command from the source stack,
+		//	... execute or undo it based on the specified action and,
+		//	... pushes it onto the destination stack.
+		// transfer_one does nothing if the source stack is empty.
 		//
 		// RETURN VALUE
-		//	* a pointer to the transfered command if there is one else nullptr.
-		ICommand *transfer_one(CommandStack &src, CommandStack &dest)
+		//	* true iff a command was transfered.
+		bool transfer_one(CommandStack &src, CommandStack &dest, Action action)
 		{
 			if (!src.Empty()) {
 				auto *cmd = src.Top();
 				src.Pop();
+
+				if (action == Action::Execute) cmd->Execute();
+				else if (action == Action::Undo) cmd->Undo();
 
 				dest.Push(cmd);
 
