@@ -168,6 +168,7 @@
     </ClCompile>
     <ClCompile Include="TCaret.cpp" />
     <ClCompile Include="TCmdInsertChar.cpp" />
+    <ClCompile Include="TCommandHistory.cpp" />
     <ClCompile Include="TFSOStack.cpp" />
     <ClCompile Include="TTextLine.cpp" />
   </ItemGroup>

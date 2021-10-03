@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CmdInsertChar.h" />
+    <ClInclude Include="CommandHistory.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="FSOStack.h" />
     <ClInclude Include="Icommand.h" />
@@ -160,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CmdInsertChar.cpp" />
+    <ClCompile Include="CommandHistory.cpp" />
     <ClCompile Include="FSOStack.cpp" />
     <ClCompile Include="Icommand.cpp" />
     <ClCompile Include="pch.cpp">
