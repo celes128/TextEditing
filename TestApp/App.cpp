@@ -89,6 +89,8 @@ HRESULT App::Initialize()
 	hr = CreateDeviceIndependentResources();
 	if (SUCCEEDED(hr))
 	{
+		const auto *kClassName = L"TestAppTextEditing";
+
 		// Register the window class.
 		WNDCLASSEX wcex = { sizeof(WNDCLASSEX) };
 		wcex.style = CS_HREDRAW | CS_VREDRAW;
@@ -99,7 +101,7 @@ HRESULT App::Initialize()
 		wcex.hbrBackground = NULL;
 		wcex.lpszMenuName = NULL;
 		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wcex.lpszClassName = L"D2DApp";
+		wcex.lpszClassName = kClassName;
 
 		RegisterClassEx(&wcex);
 
@@ -111,13 +113,13 @@ HRESULT App::Initialize()
 		m_pD2DFactory->GetDesktopDpi(&dpiX, &dpiY);
 
 		m_hwnd = CreateWindow(
-			L"D2DApp",
+			kClassName,
 			L"Plot",
 			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
-			static_cast<UINT>(ceil(1024.f * dpiX / 96.f)),
-			static_cast<UINT>(ceil(768.f * dpiY / 96.f)),
+			static_cast<UINT>(ceil(800.f * dpiX / 96.f)),
+			static_cast<UINT>(ceil(600.f * dpiY / 96.f)),
 			NULL,
 			NULL,
 			HINST_THISCOMPONENT,

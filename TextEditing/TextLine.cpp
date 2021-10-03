@@ -53,7 +53,6 @@ namespace ted {
 	bool TextLine::CMoveBackward(size_t n)
 	{
 		const auto prev = m_caret;
-		const auto len = Length();
 
 		if (n <= m_caret) m_caret -= n;
 		else m_caret = 0;
@@ -93,15 +92,11 @@ namespace ted {
 
 		if (i != 0) {
 			for (auto j = i; j >= 1; --j) {
-				if (std::isspace(s[j - 1])) {
-					return j;
-				}
+				if (std::isspace(s[j - 1])) return j;
 			}
 			return 0;
 		}
-		else {
-			return 0;
-		}
+		else return 0;
 	}
 
 	// PRECONDITIONS
@@ -236,10 +231,9 @@ namespace ted {
 
 	bool TextLine::Clear()
 	{
-		size_t n = m_text.length();
-		if (n > 0) {
+		if (Length() > 0) {
 			m_text.clear();
-			CMoveToLineBegin();
+			m_caret = 0;
 			return true;
 		}
 		else return false;
