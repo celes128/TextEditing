@@ -239,10 +239,40 @@ namespace ted {
 		else return false;
 	}
 
-	bool TextLine::InsertChar(char c)
+	bool TextLine::InsertAtCaret(char c)
 	{
 		m_text.insert(m_caret, 1, c);
 		CMoveForward();
+		return true;
+	}
+
+	bool TextLine::InsertAtIndex(char c, size_t i)
+	{
+		if (i > Length()) return false;
+
+		auto prev = m_caret;
+		
+		m_caret = i;
+		InsertAtCaret(c);
+
+		m_caret = prev + 1;
+
+		return true;
+	}
+
+	bool TextLine::DeleteCharAtIndex(size_t i, char *c)
+	{
+		if (i >= Length()) return false;
+
+		if (c) *c = m_text[i];
+
+		auto prev = m_caret;
+
+		m_caret = i + 1;
+		CDeleteLeftChar();
+
+		m_caret = prev - 1;
+
 		return true;
 	}
 }

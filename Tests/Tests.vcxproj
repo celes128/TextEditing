@@ -167,6 +167,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TCaret.cpp" />
+    <ClCompile Include="TCmdInsertChar.cpp" />
     <ClCompile Include="TFSOStack.cpp" />
     <ClCompile Include="TTextLine.cpp" />
   </ItemGroup>

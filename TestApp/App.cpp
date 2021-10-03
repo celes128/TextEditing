@@ -423,7 +423,7 @@ void App::on_wm_char(WPARAM wParam)
 
 	default:// Filter only displayable ASCII characters
 		if (32 <= wParam && wParam < 128) {
-			changed = m_textline.InsertChar(wParam);
+			changed = m_textline.InsertAtCaret(wParam);
 		}
 		else changed = false;
 		break;
